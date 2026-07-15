@@ -1,0 +1,7 @@
+-keepattributes *Annotation*
+-keepattributes Signature
+-keep class com.rscoders.videoplayer.** { *; }
+-keep class androidx.media3.** { *; }
+-dontwarn androidx.media3.**
+-keep class com.bumptech.glide.** { *; }
+-dontwarn com.bumptech.glide.**
