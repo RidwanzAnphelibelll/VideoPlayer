@@ -149,9 +149,20 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingTop="80dp"
+        android:paddingBottom="12dp"
         android:text="Tidak ada video ditemukan"
         android:textColor="@color/text_secondary"
         android:textSize="13sp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnOpenSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Buka Pengaturan Izin"
+        android:textSize="13sp"
+        android:backgroundTint="@color/primary"
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
