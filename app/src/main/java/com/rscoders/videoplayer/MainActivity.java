@@ -2,6 +2,8 @@ package com.rscoders.videoplayer;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -314,16 +316,23 @@ public class MainActivity extends AppCompatActivity {
         String resolution = getVideoResolution(item.id);
         String codec = getVideoCodec(item.id);
         String friendlyPath = getFriendlyPath(item.path);
+        String fullName = fileName + getExtension(item.path);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View view = LayoutInflater.from(builder.getContext()).inflate(R.layout.dialog_info, null);
-        ((TextView) view.findViewById(R.id.tvInfoName)).setText(fileName + getExtension(item.path));
+        ((TextView) view.findViewById(R.id.tvInfoName)).setText(fullName);
         ((TextView) view.findViewById(R.id.tvInfoFormat)).setText(ext.isEmpty() ? "-" : ext);
         ((TextView) view.findViewById(R.id.tvInfoSize)).setText(formatSize(item.size));
         ((TextView) view.findViewById(R.id.tvInfoResolution)).setText(resolution);
         ((TextView) view.findViewById(R.id.tvInfoCodec)).setText(codec);
         ((TextView) view.findViewById(R.id.tvInfoDuration)).setText(item.getFormattedDuration());
         ((TextView) view.findViewById(R.id.tvInfoPath)).setText(friendlyPath);
+
+        view.findViewById(R.id.btnCopyName).setOnClickListener(btn -> {
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            clipboard.setPrimaryClip(ClipData.newPlainText("nama_video", fullName));
+            Toast.makeText(this, "Nama disalin", Toast.LENGTH_SHORT).show();
+        });
 
         builder.setView(view)
             .setPositiveButton("Tutup", null)
