@@ -9,10 +9,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -50,11 +52,13 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvVideoCount;
     private TextView tvSelectCount;
     private TextView tvEmpty;
+    private Button btnOpenSettings;
 
     private List<VideoItem> pendingDeleteItems;
     private Runnable pendingDeleteAction;
 
     private ActivityResultLauncher<IntentSenderRequest> deleteRequestLauncher;
+    private ActivityResultLauncher<Intent> settingsLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         tvVideoCount = findViewById(R.id.tvVideoCount);
         tvSelectCount = findViewById(R.id.tvSelectCount);
         tvEmpty = findViewById(R.id.tvEmpty);
+        btnOpenSettings = findViewById(R.id.btnOpenSettings);
         EditText etSearch = findViewById(R.id.etSearch);
 
         deleteRequestLauncher = registerForActivityResult(
@@ -85,6 +90,17 @@ public class MainActivity extends AppCompatActivity {
                 pendingDeleteAction = null;
             }
         );
+
+        settingsLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> requestPermissions()
+        );
+
+        btnOpenSettings.setOnClickListener(v -> {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.setData(Uri.fromParts("package", getPackageName(), null));
+            settingsLauncher.launch(intent);
+        });
 
         adapter = new VideoAdapter();
         rvVideos.setLayoutManager(new LinearLayoutManager(this));
@@ -194,6 +210,17 @@ public class MainActivity extends AppCompatActivity {
         });
 
         requestPermissions();
+    }
+
+    private void showPermissionDenied() {
+        tvEmpty.setVisibility(View.VISIBLE);
+        tvEmpty.setText("Izin penyimpanan diperlukan");
+        btnOpenSettings.setVisibility(View.VISIBLE);
+        tvVideoCount.setText("0 video");
+    }
+
+    private void hidePermissionDenied() {
+        btnOpenSettings.setVisibility(View.GONE);
     }
 
     private void verifyAndReload(List<VideoItem> deletedItems) {
@@ -406,6 +433,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadVideos() {
+        hidePermissionDenied();
         new Thread(() -> {
             List<VideoItem> videos = VideoLoader.loadAll(this);
             runOnUiThread(() -> {
@@ -427,6 +455,8 @@ public class MainActivity extends AppCompatActivity {
             boolean single = count == 1;
             findViewById(R.id.btnInfo).setAlpha(single ? 1f : 0.35f);
             findViewById(R.id.btnInfo).setEnabled(single);
+            findViewById(R.id.btnDelete).setAlpha(single ? 1f : 0.35f);
+            findViewById(R.id.btnDelete).setEnabled(single);
         }
     }
 
@@ -447,8 +477,7 @@ public class MainActivity extends AppCompatActivity {
         if (req == REQ_PERMISSION && results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
             loadVideos();
         } else {
-            tvEmpty.setVisibility(View.VISIBLE);
-            tvEmpty.setText("Izin penyimpanan diperlukan");
+            showPermissionDenied();
         }
     }
 
