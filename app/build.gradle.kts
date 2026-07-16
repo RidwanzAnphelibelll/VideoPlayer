@@ -10,8 +10,8 @@ android {
         applicationId = "com.rscoders.videoplayer"
         minSdk = 21
         targetSdk = 35
-        versionCode = 100
-        versionName = "1.0.0"
+        versionCode = 150
+        versionName = "1.5.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
