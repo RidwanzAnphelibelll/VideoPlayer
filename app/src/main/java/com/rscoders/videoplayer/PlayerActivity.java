@@ -135,6 +135,15 @@ public class PlayerActivity extends AppCompatActivity {
         }
 
         player = new ExoPlayer.Builder(this).build();
+
+        player.setAudioAttributes(
+            new androidx.media3.common.AudioAttributes.Builder()
+                .setUsage(androidx.media3.common.C.USAGE_MEDIA)
+                .setContentType(androidx.media3.common.C.AUDIO_CONTENT_TYPE_MOVIE)
+                .build(),
+            true
+        );
+
         playerView.setPlayer(player);
         playerView.setUseController(false);
         playerView.setResizeMode(resizeModes[resizeIndex]);
